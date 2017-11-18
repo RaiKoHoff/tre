@@ -127,8 +127,8 @@ typedef enum { STR_WIDE, STR_BYTE, STR_MBS, STR_USER } tre_str_type_t;
 /* Returns number of bytes to add to (char *)ptr to make it
    properly aligned for the type. */
 #define ALIGN(ptr, type) \
-  ((((long)ptr) % sizeof(type)) \
-   ? (sizeof(type) - (((long)ptr) % sizeof(type))) \
+  ((((intptr_t)ptr) % sizeof(type)) \
+   ? (sizeof(type) - (((intptr_t)ptr) % sizeof(type))) \
    : 0)
 
 #undef MAX
@@ -257,26 +257,26 @@ tre_free(regex_t *preg);
 
 void
 tre_fill_pmatch(size_t nmatch, regmatch_t pmatch[], int cflags,
-		const tre_tnfa_t *tnfa, int *tags, int match_eo);
+		const tre_tnfa_t *tnfa, int *tags, intptr_t match_eo);
 
 reg_errcode_t
-tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
+tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, intptr_t len,
 		      tre_str_type_t type, int *match_tags, int eflags,
 		      int *match_end_ofs);
 
 reg_errcode_t
-tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
+tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, intptr_t len,
 		      tre_str_type_t type, int *match_tags, int eflags,
 		      int *match_end_ofs);
 
 reg_errcode_t
-tre_tnfa_run_backtrack(const tre_tnfa_t *tnfa, const void *string,
-		       int len, tre_str_type_t type, int *match_tags,
-		       int eflags, int *match_end_ofs);
+tre_tnfa_run_backtrack(const tre_tnfa_t *tnfa, const void *string, intptr_t len,
+          tre_str_type_t type, int *match_tags,
+		      int eflags, int *match_end_ofs);
 
 #ifdef TRE_APPROX
 reg_errcode_t
-tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, int len,
+tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, intptr_t len,
 		    tre_str_type_t type, int *match_tags,
 		    regamatch_t *match, regaparams_t params,
 		    int eflags, int *match_end_ofs);

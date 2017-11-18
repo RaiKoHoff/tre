@@ -73,7 +73,7 @@ typedef struct {
 } tre_tnfa_reach_t;
 
 typedef struct {
-  int pos;
+  intptr_t pos;
   int **tags;
 } tre_reach_pos_t;
 
@@ -105,14 +105,14 @@ tre_print_reach(const tre_tnfa_t *tnfa, tre_tnfa_reach_t *reach, int num_tags)
 #endif /* TRE_DEBUG */
 
 reg_errcode_t
-tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
+tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, intptr_t len,
 		      tre_str_type_t type, int *match_tags, int eflags,
 		      int *match_end_ofs)
 {
   /* State variables required by GET_NEXT_WCHAR. */
   tre_char_t prev_c = 0, next_c = 0;
   const char *str_byte = string;
-  int pos = -1;
+  intptr_t pos = -1;
   unsigned int pos_add_next = 1;
 #ifdef TRE_WCHAR
   const wchar_t *str_wide = string;
@@ -153,7 +153,7 @@ tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
      everything in a single large block from the stack frame using alloca()
      or with malloc() if alloca is unavailable. */
   {
-    int tbytes, rbytes, pbytes, xbytes, total_bytes;
+    size_t tbytes, rbytes, pbytes, xbytes, total_bytes;
     char *tmp_buf;
     /* Compute the length of the block we need. */
     tbytes = sizeof(*tmp_tags) * num_tags;
@@ -161,7 +161,7 @@ tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
     pbytes = sizeof(*reach_pos) * tnfa->num_states;
     xbytes = sizeof(int) * num_tags;
     total_bytes =
-      (sizeof(long) - 1) * 4 /* for alignment paddings */
+      (sizeof(intptr_t) - 1) * 4 /* for alignment paddings */
       + (rbytes + xbytes * tnfa->num_states) * 2 + tbytes + pbytes;
 
     /* Allocate the memory. */
@@ -177,16 +177,16 @@ tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
     /* Get the various pointers within tmp_buf (properly aligned). */
     tmp_tags = (void *)buf;
     tmp_buf = buf + tbytes;
-    tmp_buf += ALIGN(tmp_buf, long);
+    tmp_buf += ALIGN(tmp_buf, intptr_t);
     reach_next = (void *)tmp_buf;
     tmp_buf += rbytes;
-    tmp_buf += ALIGN(tmp_buf, long);
+    tmp_buf += ALIGN(tmp_buf, intptr_t);
     reach = (void *)tmp_buf;
     tmp_buf += rbytes;
-    tmp_buf += ALIGN(tmp_buf, long);
+    tmp_buf += ALIGN(tmp_buf, intptr_t);
     reach_pos = (void *)tmp_buf;
     tmp_buf += pbytes;
-    tmp_buf += ALIGN(tmp_buf, long);
+    tmp_buf += ALIGN(tmp_buf, intptr_t);
     for (i = 0; i < tnfa->num_states; i++)
       {
 	reach[i].tags = (void *)tmp_buf;
@@ -206,7 +206,7 @@ tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
       int first = tnfa->first_char;
 
       if (len >= 0)
-	str_byte = memchr(orig_str, first, (size_t)len);
+	str_byte = memchr(orig_str, first, len);
       else
 	str_byte = strchr(orig_str, first);
       if (str_byte == NULL)
@@ -219,7 +219,7 @@ tre_tnfa_run_parallel(const tre_tnfa_t *tnfa, const void *string, int len,
 	}
       DPRINT(("skipped %lu chars\n", (unsigned long)(str_byte - orig_str)));
       if (str_byte >= orig_str + 1)
-	prev_c = (unsigned char)*(str_byte - 1);
+	      prev_c = (unsigned char)*(str_byte - 1);
       next_c = (unsigned char)*str_byte;
       pos = str_byte - orig_str;
       if (len < 0 || pos < len)

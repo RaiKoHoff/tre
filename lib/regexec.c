@@ -53,7 +53,7 @@ char *alloca ();
    endpoint values. */
 void
 tre_fill_pmatch(size_t nmatch, regmatch_t pmatch[], int cflags,
-		const tre_tnfa_t *tnfa, int *tags, int match_eo)
+		const tre_tnfa_t *tnfa, int *tags, intptr_t match_eo)
 {
   tre_submatch_data_t *submatch_data;
   unsigned int i, j;

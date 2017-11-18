@@ -74,7 +74,7 @@ char *alloca ();
 #include "xmalloc.h"
 
 typedef struct {
-  int pos;
+  intptr_t pos;
   const char *str_byte;
 #ifdef TRE_WCHAR
   const wchar_t *str_wide;
@@ -197,13 +197,13 @@ typedef struct tre_backtrack_struct {
 
 reg_errcode_t
 tre_tnfa_run_backtrack(const tre_tnfa_t *tnfa, const void *string,
-		       int len, tre_str_type_t type, int *match_tags,
+           intptr_t len, tre_str_type_t type, int *match_tags,
 		       int eflags, int *match_end_ofs)
 {
   /* State variables required by GET_NEXT_WCHAR. */
   tre_char_t prev_c = 0, next_c = 0;
   const char *str_byte = string;
-  int pos = 0;
+  intptr_t pos = 0;
   unsigned int pos_add_next = 1;
 #ifdef TRE_WCHAR
   const wchar_t *str_wide = string;
@@ -221,7 +221,7 @@ tre_tnfa_run_backtrack(const tre_tnfa_t *tnfa, const void *string,
      started from. */
   int next_c_start;
   const char *str_byte_start;
-  int pos_start = -1;
+  intptr_t pos_start = -1;
 #ifdef TRE_WCHAR
   const wchar_t *str_wide_start;
 #endif /* TRE_WCHAR */

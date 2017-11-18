@@ -10,6 +10,8 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#ifdef TRE_APPROX
+
 /* AIX requires this to be the first thing in the file.	 */
 #ifdef TRE_USE_ALLOCA
 #ifndef __GNUC__
@@ -201,7 +203,7 @@ tre_set_params(tre_tnfa_approx_reach_t *reach,
 }
 
 reg_errcode_t
-tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, int len,
+tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, intptr_t len,
 		    tre_str_type_t type, int *match_tags,
 		    regamatch_t *match, regaparams_t default_params,
 		    int eflags, int *match_end_ofs)
@@ -239,7 +241,8 @@ tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, int len,
   /* Space for temporary data required for matching. */
   unsigned char *buf;
 
-  int i, id;
+  int i;
+  size_t id;
 
   if (!match_tags)
     num_tags = 0;
@@ -274,7 +277,7 @@ tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, int len,
     int total_bytes = reach_bytes * 2 + (tnfa->num_states * 2 + 1 ) * tag_bytes;
     /* Add some extra to make sure we can align the pointers.  The multiplier
        used here must be equal to the number of ALIGN calls below. */
-    total_bytes += (sizeof(long) - 1) * 3;
+    total_bytes += (sizeof(intptr_t) - 1) * 3;
 
     /* Allocate the memory. */
 #ifdef TRE_USE_ALLOCA
@@ -289,17 +292,17 @@ tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, int len,
     /* Allocate `tmp_tags' from `buf'. */
     tmp_tags = (void *)buf;
     buf_cursor = buf + tag_bytes;
-    buf_cursor += ALIGN(buf_cursor, long);
+    buf_cursor += ALIGN(buf_cursor, intptr_t);
 
     /* Allocate `reach' from `buf'. */
     reach = (void *)buf_cursor;
     buf_cursor += reach_bytes;
-    buf_cursor += ALIGN(buf_cursor, long);
+    buf_cursor += ALIGN(buf_cursor, intptr_t);
 
     /* Allocate `reach_next' from `buf'. */
     reach_next = (void *)buf_cursor;
     buf_cursor += reach_bytes;
-    buf_cursor += ALIGN(buf_cursor, long);
+    buf_cursor += ALIGN(buf_cursor, intptr_t);
 
     /* Allocate tag arrays for `reach' and `reach_next' from `buf'. */
     for (i = 0; i < tnfa->num_states; i++)
@@ -810,3 +813,5 @@ tre_tnfa_run_approx(const tre_tnfa_t *tnfa, const void *string, int len,
 
   return match_eo >= 0 ? REG_OK : REG_NOMATCH;
 }
+
+#endif /* TRE_APPROX */

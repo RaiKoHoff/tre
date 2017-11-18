@@ -15,5 +15,5 @@ typedef struct {
 } tre_filter_t;
 
 
-int
+intptr_t
 tre_filter_find(const unsigned char *str, size_t len, tre_filter_t *filter);

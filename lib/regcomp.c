@@ -50,7 +50,6 @@ tre_regncomp(regex_t *preg, const char *regex, size_t n, int cflags)
 #if TRE_MULTIBYTE
   else
     {
-      int consumed;
       tre_char_t *wcptr = wregex;
 #ifdef HAVE_MBSTATE_T
       mbstate_t state;
@@ -58,7 +57,7 @@ tre_regncomp(regex_t *preg, const char *regex, size_t n, int cflags)
 #endif /* HAVE_MBSTATE_T */
       while (n > 0)
 	{
-	  consumed = tre_mbrtowc(wcptr, regex, n, &state);
+	  size_t consumed = tre_mbrtowc(wcptr, regex, n, &state);
 
 	  switch (consumed)
 	    {

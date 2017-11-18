@@ -19,7 +19,7 @@
 #include "tre-internal.h"
 #include "tre-filter.h"
 
-int
+intptr_t
 tre_filter_find(const unsigned char *str, size_t len, tre_filter_t *filter)
 {
   unsigned short counts[256];
